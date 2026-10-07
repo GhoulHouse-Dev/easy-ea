@@ -20,6 +20,8 @@ npm start
 
 Sivut: etusivu, yrityksille, kurssit, hinta, Kouvola, kouluttaja ja yhteystiedot. Sisältö on tiedostossa `lib/pages.json`; etusivun rakenne tiedostossa `app/page.tsx`. Designin muuttujat ovat `app/tokens.css` ja komponenttien tyylit `app/globals.css`. Copy ja käyttöliittymän määrittely löytyvät `docs/`-hakemistosta.
 
+Yritysten oppaat löytyvät osoitteesta `/artikkelit/`. Ensimmäisen artikkelin muokattava teksti on `content/artikkelit/ensiapukoulutus-kela-korvaus.md`, metat ja päivämäärät `lib/article.ts`-tiedostossa. Artikkeli renderöidään staattisesti Markdownista: muuta tekstiä ja julkaise uusi build. Hakutarkoitus ja ylläpito-ohjeet ovat `docs/EasyEA_artikkeli_01_SEO.md`-tiedostossa.
+
 ## Vercel
 
 Projekti `easy-ea`, Next.js, projektin juurihakemisto `/`, Node.js 24.x. Maksuton Vercelin tarjoama osoite on projektin `vercel.app`-osoite; omaa domainia ei tarvitse ostaa. Hosting-suunnitelma ja sen käyttöehdot määräytyvät olemassa olevan Vercel-tilin mukaan.
