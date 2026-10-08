@@ -12,6 +12,7 @@ npm run dev
 ```
 
 ```sh
+npm test
 npm run lint
 npm run typecheck
 npm run build
@@ -33,6 +34,10 @@ Ensimmäinen julkaisu tehtiin suoraan lähdetiedostoista, koska Vercelin GitHub-
 3. Aseta Production Branch arvoksi `main`. Sen jälkeen main-push julkaisee tuotantoversion ja muut haarat esikatselun.
 
 Älä lisää tokeneita tai ympäristösalaisuuksia repoon. `.vercel/`, `.env*` ja paikalliset build-tiedostot on jätetty versionhallinnan ulkopuolelle.
+
+## Kurssipaketit ja hintalaskuri
+
+`/kurssit/` sisältää roolipohjaisen kurssisuunnittelun ja kolme toimintaympäristön pakettia. `/ensiapukoulutus-hinta/` sisältää käyttäjän antaman 99/79/59 €:n **hinnoitteluesimerkin** sekä omilla tarjoushinnoilla toimivan vertailulaskurin. Hinnat eivät ole vahvistettu myyntihinnasto. Valittu paketti, kurssi ja ryhmäkoko siirtyvät koulutuspyyntöön; laskurin hintatiedot eivät siirry. Toteutus ja laskentatapa: `docs/EasyEA_kurssipaketit_ja_laskuri.md`.
 
 ## Tarjouspyyntö
 
