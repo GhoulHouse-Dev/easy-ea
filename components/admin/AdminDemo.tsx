@@ -24,6 +24,7 @@ export function AdminDemo(){
   async function participantAction(_:AdminState,data:FormData):Promise<AdminState>{
     const v=(key:string)=>String(data.get(key)||"").trim();const old=rows.find(p=>p.id===v("id"));
     const p:Participant={...emptyParticipant,...old,id:old?.id||crypto.randomUUID(),training_id:t.id,version:(old?.version||0)+1,name:v("name"),email:v("email"),attendance:v("attendance"),result:v("result"),document_ref:v("document_ref"),delivery_method:v("delivery_method"),recipient:v("recipient"),delivered_on:v("delivered_on")};
+    if(old?.result==="Hyväksytty" && p.result==="Hyväksytty" && (old.name!==p.name || old.email!==p.email)) return {error:"Nimen tai sähköpostin korjaus edellyttää suorituksen ja dokumentin uutta tarkistamista. Palauta suoritus ensin odottamaan ja käsittele toimitustieto tarvittaessa."};
     if(p.result!=="Hyväksytty"){p.confirmed_by="";p.confirmed_on="";p.document_approved_by="";p.document_approved_on="";}
     else if(old?.result!=="Hyväksytty"){p.confirmed_by="Esimerkkihallinnoija";p.confirmed_on=today();}
     if(data.get("approve_document")==="on"){if(!old?.document_approved_by||old.document_ref!==p.document_ref){p.document_approved_by="Esimerkkihallinnoija";p.document_approved_on=today();}}

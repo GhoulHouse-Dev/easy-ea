@@ -1,5 +1,5 @@
 "use client";
-import { useActionState, useState, type ReactNode } from "react";
+import { useActionState, useState, type ChangeEvent, type ReactNode } from "react";
 import { emptyParticipant, attendanceOptions, resultOptions, deliveryOptions, formatDate, nextStep, parseParticipants, type AdminState, type Participant, type Training } from "../../lib/admin";
 import { saveTraining, saveParticipant, importParticipants } from "../../app/hallinta/actions";
 type Action=(state:AdminState,data:FormData)=>Promise<AdminState>;
@@ -7,30 +7,34 @@ export function Notice({state}:{state:AdminState}) { return state.error?<p class
 export function Field({name,label,children,...props}:{name:string;label:string;children?:ReactNode;[key:string]:unknown}) { return <div className="ea-field"><label className="ea-label" htmlFor={name}>{label}</label>{children||<input className="ea-input" id={name} name={name} {...props}/>}</div>; }
 export function TrainingForm({training,action=saveTraining}:{training?:Training;action?:Action}) {
   const [state,formAction,pending]=useActionState(action,{});
+  const [fields,setFields]=useState({company:training?.company||"",course:training?.course||"",training_date:training?.training_date||"",code:training?.code||"",delivery_agreement:training?.delivery_agreement||"",admin_minutes:String(training?.admin_minutes||0),corrections:String(training?.corrections||0)});
+  const change=(e:ChangeEvent<HTMLInputElement>)=>setFields(old=>({...old,[e.target.name]:e.target.value}));
   return <form action={formAction} className="admin-form"><Notice state={state}/>{training&&<><input type="hidden" name="id" value={training.id}/><input type="hidden" name="version" value={training.version}/></>}<div className="ea-form-grid">
-    <Field name="company" label="Yritys tai yhteisö" required maxLength={500} defaultValue={training?.company}/>
-    <Field name="course" label="Kurssi / toteutus" required maxLength={500} defaultValue={training?.course} placeholder="Esim. Hätäensiapu 4 h"/>
-    <Field name="training_date" label="Koulutuspäivä" required type="date" defaultValue={training?.training_date}/>
-    <Field name="code" label="Koulutuksen tunnus" required maxLength={50} defaultValue={training?.code} placeholder="Esim. EA-2026-001"/>
-    <div className="ea-field-full"><Field name="delivery_agreement" label="Sovittu dokumenttien toimitus" required maxLength={500} defaultValue={training?.delivery_agreement} placeholder="Esim. hyväksytyt dokumentit yrityksen yhteyshenkilölle"/></div>
-    <Field name="admin_minutes" label="Hallinnointiaika (min)" type="number" min={0} max={100000} step={1} defaultValue={training?.admin_minutes||0}/>
-    <Field name="corrections" label="Korjausten määrä" type="number" min={0} max={100000} step={1} defaultValue={training?.corrections||0}/>
+    <Field name="company" label="Yritys tai yhteisö" required maxLength={500} value={fields.company} onChange={change}/>
+    <Field name="course" label="Kurssi / toteutus" required maxLength={500} value={fields.course} onChange={change} placeholder="Esim. Hätäensiapu 4 h"/>
+    <Field name="training_date" label="Koulutuspäivä" required type="date" value={fields.training_date} onChange={change}/>
+    <Field name="code" label="Koulutuksen tunnus" required maxLength={50} value={fields.code} onChange={change} placeholder="Esim. EA-2026-001"/>
+    <div className="ea-field-full"><Field name="delivery_agreement" label="Sovittu dokumenttien toimitus" required maxLength={500} value={fields.delivery_agreement} onChange={change} placeholder="Esim. hyväksytyt dokumentit yrityksen yhteyshenkilölle"/></div>
+    <Field name="admin_minutes" label="Hallinnointiaika (min)" type="number" min={0} max={100000} step={1} value={fields.admin_minutes} onChange={change}/>
+    <Field name="corrections" label="Korjausten määrä" type="number" min={0} max={100000} step={1} value={fields.corrections} onChange={change}/>
   </div><p className="admin-help">Yksi yritys ja koulutus per rekisteri. Koulutuksen tunnus liittää CSV-listan oikeaan koulutukseen.</p><button className="ea-button ea-button-primary" disabled={pending}>{pending?"Tallennetaan…":training?"Tallenna koulutuksen tiedot":"Luo koulutus"}</button></form>;
 }
 export function ParticipantForm({training,participant,action=saveParticipant,onClose}:{training:Training;participant?:Participant;action?:Action;onClose:()=>void}) {
   const p=participant||{...emptyParticipant,id:"",training_id:training.id,version:0};
   const [state,formAction,pending]=useActionState(action,{});
+  const [fields,setFields]=useState({...p});const [approved,setApproved]=useState(!!p.document_approved_by);
+  const change=(e:ChangeEvent<HTMLInputElement|HTMLSelectElement>)=>setFields(old=>({...old,[e.target.name]:e.target.value}));
   return <section className="admin-editor" aria-label="Osallistujan tiedot"><div className="admin-heading-row"><h3>{participant?"Muokkaa osallistujaa":"Lisää osallistuja"}</h3><button className="admin-text-button" type="button" onClick={onClose}>Sulje</button></div><form action={formAction} className="admin-form"><Notice state={state}/><input type="hidden" name="training_id" value={training.id}/><input type="hidden" name="id" value={p.id}/><input type="hidden" name="version" value={p.version}/><div className="ea-form-grid">
-    <Field name="name" label="Nimi" required maxLength={160} defaultValue={p.name}/><Field name="email" label="Sähköposti" required type="email" maxLength={254} defaultValue={p.email}/>
-    <Field name="attendance" label="Osallistuminen"><select className="ea-select" id="attendance" name="attendance" defaultValue={p.attendance}>{attendanceOptions.map(s=><option key={s}>{s}</option>)}</select></Field>
-    <Field name="result" label="Suoritus"><select className="ea-select" id="result" name="result" defaultValue={p.result}>{resultOptions.map(s=><option key={s}>{s}</option>)}</select></Field>
+    <Field name="name" label="Nimi" required maxLength={160} value={fields.name} onChange={change}/><Field name="email" label="Sähköposti" required type="email" maxLength={254} value={fields.email} onChange={change}/>
+    <Field name="attendance" label="Osallistuminen"><select className="ea-select" id="attendance" name="attendance" value={fields.attendance} onChange={change}>{attendanceOptions.map(s=><option key={s}>{s}</option>)}</select></Field>
+    <Field name="result" label="Suoritus"><select className="ea-select" id="result" name="result" value={fields.result} onChange={change}>{resultOptions.map(s=><option key={s}>{s}</option>)}</select></Field>
     <div className="ea-field-full admin-help">Kun hyväksyt suorituksen, vahvistajaksi kirjataan kirjautunut hallinnoija ja päiväksi tämä päivä. Hyväksy vain kouluttajan vahvistama suoritus. {p.confirmed_by&&<strong>Kirjattu vahvistus: {p.confirmed_by}, {formatDate(p.confirmed_on)}.</strong>}</div>
-    <div className="ea-field-full"><Field name="document_ref" label="Hyväksyttävän dokumentin tiedostoviite" maxLength={500} defaultValue={p.document_ref} placeholder="Sisäinen tiedostoviite, ei julkinen henkilötietolinkki"/></div>
-    <label className="admin-check ea-field-full"><input type="checkbox" name="approve_document" defaultChecked={!!p.document_approved_by}/> Olen tarkistanut dokumentin ja vahvistan sen hyväksynnän.</label>
+    <div className="ea-field-full"><Field name="document_ref" label="Hyväksyttävän dokumentin tiedostoviite" maxLength={500} value={fields.document_ref} onChange={change} placeholder="Sisäinen tiedostoviite, ei julkinen henkilötietolinkki"/></div>
+    <label className="admin-check ea-field-full"><input type="checkbox" name="approve_document" checked={approved} onChange={e=>setApproved(e.target.checked)}/> Olen tarkistanut dokumentin ja vahvistan sen hyväksynnän.</label>
     {p.document_approved_by&&<p className="admin-help ea-field-full">Hyväksyjä: {p.document_approved_by}, {formatDate(p.document_approved_on)}. Viitteen muuttaminen edellyttää uutta hyväksyntää.</p>}
-    <Field name="delivery_method" label="Toimitustapa"><select className="ea-select" id="delivery_method" name="delivery_method" defaultValue={p.delivery_method}>{deliveryOptions.map(s=><option key={s} value={s}>{s||"Ei vielä sovittu"}</option>)}</select></Field>
-    <Field name="recipient" label="Sovittu vastaanottaja" maxLength={500} defaultValue={p.recipient} placeholder="Sähköposti tai sovittu vastaanottaja"/>
-    <Field name="delivered_on" label="Todellinen toimituspäivä" type="date" defaultValue={p.delivered_on}/>
+    <Field name="delivery_method" label="Toimitustapa"><select className="ea-select" id="delivery_method" name="delivery_method" value={fields.delivery_method} onChange={change}>{deliveryOptions.map(s=><option key={s} value={s}>{s||"Ei vielä sovittu"}</option>)}</select></Field>
+    <Field name="recipient" label="Sovittu vastaanottaja" maxLength={500} value={fields.recipient} onChange={change} placeholder="Sähköposti tai sovittu vastaanottaja"/>
+    <Field name="delivered_on" label="Todellinen toimituspäivä" type="date" value={fields.delivered_on} onChange={change}/>
     <p className="admin-help">Kirjaa toimituspäivä vasta, kun hyväksytty dokumentti on toimitettu sovitusti. Paneeli ei lähetä dokumentteja tai myönnä todistuksia.</p>
   </div><button className="ea-button ea-button-primary" disabled={pending}>{pending?"Tallennetaan…":"Tallenna osallistuja"}</button></form></section>;
 }
