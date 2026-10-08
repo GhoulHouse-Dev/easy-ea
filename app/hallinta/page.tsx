@@ -1,0 +1,12 @@
+import Link from "next/link";
+import { requireStaff } from "../../lib/supabase/server";
+import { formatDate, nextStep, type Participant, type Training } from "../../lib/admin";
+import { AdminShell } from "../../components/admin/AdminShell";
+import { TrainingForm } from "../../components/admin/AdminForms";
+import { Workflow } from "../../components/admin/Workflow";
+export default async function AdminPage() {
+  const {db,staff}=await requireStaff();
+  const [{data:trainings,error},{data:participants,error:participantError}]=await Promise.all([db.from("ea_trainings").select("*").eq("archived",false).order("training_date",{ascending:false}),db.from("ea_participants").select("*").eq("archived",false)]);
+  const t=(trainings||[]) as Training[],p=(participants||[]) as Participant[];
+  return <AdminShell name={staff.display_name}><div className="admin-page-heading"><div><p className="eyebrow">KOULUTUKSET JA OSALLISTUJAT</p><h1>Koulutusten hallinta</h1><p>Yhdestä listasta hyväksyttyihin dokumentteihin.</p></div><a className="ea-button ea-button-primary" href="#uusi-koulutus">+ Uusi koulutus</a></div>{(error||participantError)?<p role="alert" className="admin-notice admin-error">Tietoja ei voitu hakea pilvestä. Päivitä sivu tai tarkista yhteys.</p>:<><div className="admin-stats"><div><span>Koulutukset</span><strong>{t.length}</strong></div><div><span>Osallistujat</span><strong>{p.length}</strong></div><div><span>Hyväksytyt suoritukset</span><strong>{p.filter(p=>p.result==="Hyväksytty").length}</strong></div><div><span>Työ odottaa</span><strong>{p.filter(row=>{const tr=t.find(x=>x.id===row.training_id);return tr&&nextStep(tr,row)!=="Toimitettu";}).length}</strong></div></div><section className="admin-card"><h2>Koulutukset</h2>{t.length?<div className="admin-training-list">{t.map(row=><Link key={row.id} className="admin-training-link" href={`/hallinta/koulutukset/${row.id}/`}><span><strong>{row.company}</strong><small>{row.course} · {formatDate(row.training_date)}</small></span><span>{row.code}<small>{p.filter(p=>p.training_id===row.id).length} osallistujaa ↗</small></span></Link>)}</div>:<div className="admin-empty"><strong>Aloita ensimmäisestä koulutuksesta</strong><p>Luo koulutus ja lähetä yritykselle sen oma CSV-pohja.</p></div>}</section></>}<section className="admin-card" id="uusi-koulutus"><h2>Uusi koulutus</h2><TrainingForm/></section><Workflow/></AdminShell>;
+}
