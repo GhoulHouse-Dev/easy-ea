@@ -60,3 +60,9 @@ Sivusto ei sisällä seurantaa, analytiikkaa, someupotuksia tai käyttöliittym�
 ## Aineisto
 
 Jamin kuva ja EasyEA-logo ovat käyttäjän osoittamalta nykyiseltä easyea.fi-sivustolta. Manrope on SIL Open Font License -lisenssillä; lisenssi sisältyy `public/fonts/OFL.txt`-tiedostoon. Sivusto käyttää oikeaa nykyistä kuvaa, eikä sisällä luotuja asiakaspalautteita.
+
+## Ilmainen vauvan ja taaperon ensiapuopas
+
+Etusivun ja lasten ensiapupaketin latausosio ohjaa kaksisivuiseen A4-PDF:ään. Esittelysivu: `/oppaat/vauvan-ja-taaperon-ensiapu/`. Lataus toimii ilman henkilötietojen keruuta. Esittelysivun koulutuspyyntö esitäyttää lasten paketin ja oppaan lähdemerkinnän nykyiseen sähköpostiluonnokseen.
+
+Sisältö, lähteet ja tuotanto: [oppaan toteutusmuistio](docs/EasyEA_ilmainen_ensiapuopas.md).
