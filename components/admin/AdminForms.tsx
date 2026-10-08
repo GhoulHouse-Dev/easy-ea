@@ -13,7 +13,7 @@ export function TrainingForm({training,action=saveTraining}:{training?:Training;
   return <form onSubmit={keepForm(formAction)} method="post" className="admin-form"><Notice state={state}/>{training&&<><input type="hidden" name="id" value={training.id}/><input type="hidden" name="version" value={training.version}/></>}<div className="ea-form-grid">
     <Field name="company" label="Yritys tai yhteisö" required maxLength={500} value={fields.company} onChange={change}/>
     <Field name="course" label="Kurssi / toteutus" required maxLength={500} value={fields.course} onChange={change} placeholder="Esim. Hätäensiapu 4 h"/>
-    <Field name="training_date" label="Koulutuspäivä" required type="date" value={fields.training_date} onChange={change}/>
+    <Field name="training_date" label="Koulutuspäivä" required type="date" defaultValue={training?.training_date}/>
     <Field name="code" label="Koulutuksen tunnus" required maxLength={50} value={fields.code} onChange={change} placeholder="Esim. EA-2026-001"/>
     <div className="ea-field-full"><Field name="delivery_agreement" label="Sovittu dokumenttien toimitus" required maxLength={500} value={fields.delivery_agreement} onChange={change} placeholder="Esim. hyväksytyt dokumentit yrityksen yhteyshenkilölle"/></div>
     <Field name="admin_minutes" label="Hallinnointiaika (min)" type="number" min={0} max={100000} step={1} value={fields.admin_minutes} onChange={change}/>
@@ -35,7 +35,7 @@ export function ParticipantForm({training,participant,action=saveParticipant,onC
     {p.document_approved_by&&<p className="admin-help ea-field-full">Hyväksyjä: {p.document_approved_by}, {formatDate(p.document_approved_on)}. Viitteen muuttaminen edellyttää uutta hyväksyntää.</p>}
     <Field name="delivery_method" label="Toimitustapa"><select className="ea-select" id="delivery_method" name="delivery_method" value={fields.delivery_method} onChange={change}>{deliveryOptions.map(s=><option key={s} value={s}>{s||"Ei vielä sovittu"}</option>)}</select></Field>
     <Field name="recipient" label="Sovittu vastaanottaja" maxLength={500} value={fields.recipient} onChange={change} placeholder="Sähköposti tai sovittu vastaanottaja"/>
-    <Field name="delivered_on" label="Todellinen toimituspäivä" type="date" value={fields.delivered_on} onChange={change}/>
+    <Field name="delivered_on" label="Todellinen toimituspäivä" type="date" defaultValue={p.delivered_on}/>
     <p className="admin-help">Kirjaa toimituspäivä vasta, kun hyväksytty dokumentti on toimitettu sovitusti. Paneeli ei lähetä dokumentteja tai myönnä todistuksia.</p>
   </div><button className="ea-button ea-button-primary" disabled={pending}>{pending?"Tallennetaan…":"Tallenna osallistuja"}</button></form></section>;
 }
